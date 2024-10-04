@@ -28,7 +28,9 @@ const Cart = () => {
           {/* Información del producto */}
           <Box flex="1">
             <Text fontWeight="bold" fontSize="lg">{item.nombre}</Text>
-            <Text>Cantidad: {item.quantity}</Text>
+            <Text>Marca: {item.marca}</Text>
+            <Text>Kilómetros: {item.kms} kms</Text>
+            <Text>Categoría: {item.categoria}</Text>
             <Text>Precio Unitario: USD {item.precio.toLocaleString()}</Text>
             <Text>Subtotal: USD {(item.precio * item.quantity).toLocaleString()}</Text>
           </Box>

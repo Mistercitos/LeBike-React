@@ -1,115 +1,54 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { Box, Image, Text, Flex, Button, Icon, HStack, Input } from '@chakra-ui/react';
-import { useParams } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom'; // Para obtener el ID de la URL
 import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../firebaseConfig'; // Asegúrate de tener configurado Firebase
-import { CartContext } from '../context/CartContext'; // Importar el contexto del carrito
+import { db } from '../firebaseConfig';
+import { Box, Text, Image, Spinner } from '@chakra-ui/react';
 
 const ItemDetailContainer = () => {
-  const { id } = useParams(); // Obtener el id del producto desde la URL
+  const { id } = useParams(); // Obtenemos el ID de la URL
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [quantity, setQuantity] = useState(1); // Control de la cantidad
-
-  const { addToCart } = useContext(CartContext); // Usamos el contexto del carrito
 
   useEffect(() => {
     const fetchItem = async () => {
       try {
-        const docRef = doc(db, 'products', id);
+        const docRef = doc(db, 'products', id); // Se referencia el documento por ID
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          setItem({ id: docSnap.id, ...docSnap.data() });
+          setItem({ id: docSnap.id, ...docSnap.data() }); // Guardamos el producto en el estado
         } else {
-          console.error('No such document!');
+          console.error('No se encontró el producto.');
         }
       } catch (error) {
-        console.error('Error fetching item:', error);
+        console.error('Error al obtener el producto:', error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchItem();
-  }, [id]);
-
-  // Función para incrementar la cantidad
-  const incrementQuantity = () => {
-    setQuantity((prevQuantity) => prevQuantity + 1);
-  };
-
-  // Función para disminuir la cantidad
-  const decrementQuantity = () => {
-    setQuantity((prevQuantity) => (prevQuantity > 1 ? prevQuantity - 1 : 1)); // Mínimo 1
-  };
-
-  // Función para agregar al carrito
-  const handleAddToCart = () => {
-    addToCart(item, quantity); // Añadir el producto con la cantidad seleccionada
-  };
+  }, [id]); // Ejecuta el efecto cuando cambia el ID
 
   if (loading) {
-    return <Text>Cargando...</Text>;
+    return <Spinner size="xl" />;
   }
 
   if (!item) {
-    return <Text>Error al cargar el producto</Text>;
+    return <Text>No se encontró el producto.</Text>;
   }
 
   return (
-    <Flex p="6" justifyContent="center" alignItems="center" wrap="wrap" direction={['column', 'row']}>
-      
-      {/* Imagen del producto */}
-      <Box flex="1" maxW="600px" mb={4}>
-        <Image 
-          src={item.imagen} 
-          alt={item.nombre} 
-          objectFit="cover" 
-          width="100%" 
-          height="auto"
-          borderRadius="lg"
-        />
-      </Box>
-
-      {/* Información del producto */}
-      <Box flex="1" ml={[0, 8]} maxW="500px" textAlign={["center", "left"]}>
-        <Text fontSize="2xl" fontWeight="bold" mb={2}>{item.marca}</Text>
-        
-        <Text fontSize="4xl" fontWeight="bold" mb={4}>{item.nombre}</Text>
-
-        {/* Tipo y Marca en lugar de Reseñas */}
-        <Text fontSize="lg" fontWeight="bold" color="gray.500" mb={2}>
-          Tipo: {item.tipo}
-        </Text>
-
-        <Text fontSize="lg" fontWeight="bold" color="gray.500" mb={4}>
-          Marca: {item.marca}
-        </Text>
-
-        {/* Precio */}
-        <Text fontSize="3xl" fontWeight="bold" mb={4}>
-          USD {item.precio.toLocaleString()}
-        </Text>
-
-        {/* Descripción del producto */}
-        <Text fontSize="lg" color="gray.300" mb={6}>
-          {item.descripcion}
-        </Text>
-
-        {/* Control de cantidad */}
-        <HStack spacing={4} mb={6}>
-          <Button onClick={decrementQuantity} disabled={quantity <= 1}>-</Button>
-          <Input value={quantity} readOnly textAlign="center" width="50px" />
-          <Button onClick={incrementQuantity}>+</Button>
-        </HStack>
-
-        {/* Botón de agregar al carrito */}
-        <Button colorScheme="red" size="lg" width="100%" mb={4} onClick={handleAddToCart}>
-          Agregar al carrito
-        </Button>
-      </Box>
-    </Flex>
+    <Box>
+      {/* Detalles del producto */}
+      <Image src={item.imagen} alt={item.nombre} boxSize="300px" />
+      <Text fontSize="2xl">{item.nombre}</Text>
+      <Text>Marca: {item.marca}</Text>
+      <Text>Kilómetros: {item.kms}</Text>
+      <Text>Cilindrada (cc): {item.cc}</Text>
+      <Text>Descripción: {item.descripcion}</Text>
+      <Text>Precio: USD {item.precio.toLocaleString()}</Text>
+    </Box>
   );
 };
 

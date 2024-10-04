@@ -1,24 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../firebaseConfig'; // Asegúrate de que Firebase está correctamente configurado
+import { db } from '../firebaseConfig';
 import ItemList from './ItemList';
 
 const ItemListContainer = () => {
-  const [items, setItems] = useState([]);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, 'products')); // Obtenemos la colección 'products'
-        const products = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data() // Obtenemos los datos del documento
+        const productsCollection = collection(db, 'products');
+        const productSnapshot = await getDocs(productsCollection);
+        const productList = productSnapshot.docs.map((doc) => ({
+          id: doc.id, // Usamos el id generado por Firestore
+          ...doc.data(),
         }));
-        setItems(products); // Establecemos los productos en el estado
-        setLoading(false); // Cambiamos el estado de loading una vez obtenidos los productos
+        setProducts(productList);
       } catch (error) {
-        console.error('Error al obtener los productos:', error);
+        console.error('Error al cargar los productos:', error);
+      } finally {
         setLoading(false);
       }
     };
@@ -26,12 +27,11 @@ const ItemListContainer = () => {
     fetchProducts();
   }, []);
 
-  return (
-    <div>
-      <h1>Nuestros Productos</h1>
-      {loading ? <p>Cargando productos...</p> : <ItemList items={items} />} {/* Mostramos productos si no está cargando */}
-    </div>
-  );
+  if (loading) {
+    return <p>Cargando productos...</p>;
+  }
+
+  return <ItemList products={products} />;
 };
 
 export default ItemListContainer;
