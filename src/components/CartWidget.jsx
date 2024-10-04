@@ -1,20 +1,32 @@
-// src/components/CartWidget.jsx
-import React from 'react';
-import { Icon, Badge, Box } from '@chakra-ui/react';
+import React, { useContext } from 'react';
+import { Box, Icon, Text } from '@chakra-ui/react';
 import { FaShoppingCart } from 'react-icons/fa';
-import { useCart } from '../contexts/CartContext';
+import { CartContext } from '../context/CartContext';
 
 const CartWidget = () => {
-  const cart = useCart();
-  const itemCount = cart.reduce((total, item) => total + item.quantity, 0);
+  const { cartItems } = useContext(CartContext);
+  const itemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   return (
-    <Box display="flex" alignItems="center">
-      <Icon as={FaShoppingCart} w={6} h={6} />
+    <Box position="relative" display="inline-block">
+      <Icon as={FaShoppingCart} color="red.500" w={8} h={8} />
       {itemCount > 0 && (
-        <Badge ml={1} colorScheme="red">
+        <Box // Cambiamos "Text" por "Box" ya que "Box" no tiene restricciones de anidación
+          as="span"
+          position="absolute"
+          right="-1"
+          top="-1"
+          px="2"
+          py="1"
+          fontSize="xs"
+          fontWeight="bold"
+          lineHeight="none"
+          color="white"
+          bg="red.500"
+          borderRadius="full"
+        >
           {itemCount}
-        </Badge>
+        </Box>
       )}
     </Box>
   );

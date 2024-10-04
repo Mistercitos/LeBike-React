@@ -1,14 +1,20 @@
-import { ChakraProvider } from '@chakra-ui/react';
+// src/main.jsx
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import ReactDOM from 'react-dom/client';  // Cambio aquí
+import { ChakraProvider } from '@chakra-ui/react';
 import App from './App';
-import './index.css';
+import { CartProvider } from './context/CartContext';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <ChakraProvider>
-      <App />
-    </ChakraProvider>
-  </React.StrictMode>
-);
+const root = document.getElementById('app');  // Asegúrate de que el ID coincida con tu index.html
+if (root) {
+    const rootElement = ReactDOM.createRoot(root);  // Uso correcto de createRoot
+    rootElement.render(
+        <ChakraProvider>
+            <CartProvider>
+                <App />
+            </CartProvider>
+        </ChakraProvider>
+    );
+} else {
+    console.error('Failed to find the root element');
+}
