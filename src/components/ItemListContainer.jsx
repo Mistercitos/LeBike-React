@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
-import ItemList from './ItemList';
-import { Box, Spinner } from '@chakra-ui/react';
+import React, { useEffect, useState } from "react";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "../firebaseConfig";
+import ItemList from "./ItemList";
+import { Box, Spinner } from "@chakra-ui/react";
 
 const ItemListContainer = ({ category }) => {
   const [products, setProducts] = useState([]);
@@ -12,22 +12,22 @@ const ItemListContainer = ({ category }) => {
     const fetchItems = async () => {
       setLoading(true);
       try {
-        const collectionRef = collection(db, 'products');
+        const collectionRef = collection(db, "products");
         let q = query(collectionRef);
 
         if (category) {
-          q = query(collectionRef, where('categoria', '==', category));
+          q = query(collectionRef, where("categoria", "==", category));
         }
 
         const querySnapshot = await getDocs(q);
-        const items = querySnapshot.docs.map(doc => ({
+        const items = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
 
         setProducts(items);
       } catch (error) {
-        console.error('Error fetching items:', error);
+        console.error("Error fetching items:", error);
       } finally {
         setLoading(false);
       }

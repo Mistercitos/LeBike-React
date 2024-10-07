@@ -6,14 +6,14 @@ import ItemDetail from './ItemDetail';
 import { Box, Spinner, Heading } from '@chakra-ui/react';
 
 const ItemDetailContainer = () => {
-  const { id } = useParams(); // Captura el ID del producto desde la URL
+  const { id } = useParams();
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchItem = async () => {
       try {
-        const docRef = doc(db, 'products', id); // Asegúrate de que este ID sea el correcto
+        const docRef = doc(db, 'products', id);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {

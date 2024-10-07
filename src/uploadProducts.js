@@ -1,14 +1,35 @@
-import { db } from './firebaseConfig';
-import { collection, doc, setDoc } from 'firebase/firestore';
-import { products } from './products'; // Asegúrate de que tu archivo de productos esté en el mismo formato
+import { db } from '../firebaseConfig'; // Asegúrate de que la ruta sea correcta
+import { collection, addDoc } from 'firebase/firestore';
+import products from './products.json'; // Importa el archivo JSON
 
-const uploadProductsToFirestore = async () => {
-  const productsCollection = collection(db, 'products');
-  for (let product of products) {
-    const productDoc = doc(productsCollection, product.id); // Asegura que el ID sea el mismo que en el JSON
-    await setDoc(productDoc, product);
-    console.log(`Producto ${product.nombre} agregado correctamente`);
+const uploadProducts = async () => {
+  const productsCollection = collection(db, 'products'); // Asegúrate de que la colección en Firestore sea correcta
+
+  try {
+    // Itera sobre los productos y súbelos a Firestore
+    for (const product of products) {
+      const { nombre, descripcion, imagen, precio, stock, cc, kms, talla, categoria, marca, subcategoria, tipo } = product;
+
+      // Sube cada producto a Firestore
+      await addDoc(productsCollection, {
+        nombre,
+        descripcion,
+        imagen,
+        precio,
+        stock,
+        cc,
+        kms,
+        talla,
+        categoria,
+        marca,
+        subcategoria,
+        tipo,
+      });
+    }
+    console.log('Productos subidos exitosamente.');
+  } catch (error) {
+    console.error('Error al subir productos: ', error);
   }
 };
 
-uploadProductsToFirestore();
+uploadProducts();

@@ -1,66 +1,43 @@
-import React, { useContext } from 'react';
-import { Box, Image, Text, Flex, Button, HStack, Input } from '@chakra-ui/react';
-import { CartContext } from '../context/CartContext';
+import React from 'react';
+import { Box, Heading, Button, Stack, Text, Image } from '@chakra-ui/react';
+import { useCart } from '../context/CartContext';
+import { useNavigate } from 'react-router-dom';
 
 const Cart = () => {
-  const { cartItems, removeFromCart, incrementQuantity, decrementQuantity, clearCart } = useContext(CartContext);
+  const { cart, setCart } = useCart();
+  const navigate = useNavigate();
 
-  // Calcular el total
-  const total = cartItems.reduce((acc, item) => acc + item.precio * item.quantity, 0);
+  const removeFromCart = (id) => {
+    setCart(cart.filter(item => item.id !== id));
+  };
+
+  const total = cart.reduce((acc, item) => acc + item.precio * item.quantity, 0);
 
   return (
-    <Box p="6">
-      <Text fontSize="2xl" fontWeight="bold" mb={4}>Tu Carrito de Compras</Text>
-      
-      {cartItems.map((item) => (
-        <Flex key={item.id} borderWidth="1px" borderRadius="lg" p="4" mb="4" alignItems="center">
-          {/* Imagen del producto */}
-          <Image 
-            src={item.imagen} 
-            alt={item.nombre} 
-            objectFit="cover" 
-            width="100px" 
-            height="100px" 
-            borderRadius="lg" 
-            mr={4}
-          />
-
-          {/* Información del producto */}
-          <Box flex="1">
-            <Text fontWeight="bold" fontSize="lg">{item.nombre}</Text>
-            <Text>Marca: {item.marca}</Text>
-            <Text>Kilómetros: {item.kms} kms</Text>
-            <Text>Categoría: {item.categoria}</Text>
-            <Text>Precio Unitario: USD {item.precio.toLocaleString()}</Text>
-            <Text>Subtotal: USD {(item.precio * item.quantity).toLocaleString()}</Text>
-          </Box>
-
-          {/* Controles de cantidad */}
-          <HStack>
-            <Button onClick={() => decrementQuantity(item.id)}>-</Button>
-            <Input value={item.quantity} readOnly textAlign="center" width="50px" />
-            <Button onClick={() => incrementQuantity(item.id)}>+</Button>
-          </HStack>
-
-          {/* Botón de eliminar */}
-          <Button ml={4} colorScheme="red" onClick={() => removeFromCart(item.id)}>
-            Eliminar
+    <Box p={5} w="100%" minH="100vh" bg="gray.900">
+      <Heading as="h2" size="lg" color="white" mb={5}>Tu Carrito</Heading>
+      {cart.length === 0 ? (
+        <Text color="white">No hay productos en el carrito.</Text>
+      ) : (
+        <Stack spacing={4}>
+          {cart.map(item => (
+            <Box key={item.id} bg="gray.800" p={4} borderRadius="md" display="flex" justifyContent="space-between" alignItems="center">
+              <Image src={item.imagen} alt={item.nombre} boxSize="50px" objectFit="cover" />
+              <Text color="white">{item.nombre} - {item.quantity} x USD {item.precio.toLocaleString()}</Text>
+              <Stack direction="row" spacing={2}>
+                <Button colorScheme="red" onClick={() => removeFromCart(item.id)}>Eliminar</Button>
+              </Stack>
+            </Box>
+          ))}
+          <Text color="white" fontWeight="bold">Total: USD {total.toLocaleString()}</Text>
+          <Button 
+            colorScheme="green" 
+            onClick={() => navigate('/checkout')}
+          >
+            Proceder al Pago
           </Button>
-        </Flex>
-      ))}
-
-      {/* Mostrar el total */}
-      <Text fontSize="2xl" fontWeight="bold">Total: USD {total.toLocaleString()}</Text>
-
-      {/* Botones para vaciar carrito y seguir comprando */}
-      <Flex mt={4}>
-        <Button colorScheme="red" mr={4} onClick={clearCart}>
-          Vaciar Carrito
-        </Button>
-        <Button colorScheme="blue">
-          Seguir Comprando
-        </Button>
-      </Flex>
+        </Stack>
+      )}
     </Box>
   );
 };

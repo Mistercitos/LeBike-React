@@ -8,8 +8,8 @@ const colors = {
   },
   accent: {
     100: '#fffae6',
-    200: '#e2e2e2'
-  }
+    200: '#e2e2e2',
+  },
 };
 
 const components = {
