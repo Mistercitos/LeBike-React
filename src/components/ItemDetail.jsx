@@ -1,54 +1,28 @@
-import React, { useState, useContext } from 'react';
-import { Box, Button, Image, Text, Input, HStack } from '@chakra-ui/react';
-import { CartContext } from '../context/CartContext';
+import React from 'react';
+import { Box, Heading, Image, Text, Stack } from '@chakra-ui/react';
 
-const ItemDetail = ({ product }) => {
-  const { addToCart } = useContext(CartContext);
-  const [quantity, setQuantity] = useState(1); // Estado para manejar la cantidad
-
-  // Función para incrementar la cantidad
-  const incrementQuantity = () => {
-    setQuantity(prevQuantity => prevQuantity + 1);
-  };
-
-  // Función para decrementar la cantidad
-  const decrementQuantity = () => {
-    if (quantity > 1) {
-      setQuantity(prevQuantity => prevQuantity - 1);
-    }
-  };
-
-  const handleAddToCart = () => {
-    addToCart(product, quantity); // Agregar al carrito
-  };
-
+const ItemDetail = ({ item }) => {
   return (
-    <Box>
-      <Image src={product.imagen} alt={product.nombre} />
-      <Text fontWeight="bold" fontSize="2xl">{product.nombre}</Text>
-      <Text>Marca: {product.marca}</Text>
-      <Text>Tipo: {product.tipo}</Text>
-      <Text>Stock: {product.stock}</Text>
-      <Text>{product.descripcion}</Text>
-      <Text fontSize="xl">${product.precio}</Text>
-
-      <Box mt="4">
-        <Text mb="2">Cantidad:</Text>
-        <HStack maxW="200px" mb="4">
-          <Button onClick={decrementQuantity} disabled={quantity === 1}>-</Button>
-          <Input
-            type="number"
-            value={quantity}
-            readOnly
-            textAlign="center"
-          />
-          <Button onClick={incrementQuantity}>+</Button>
-        </HStack>
-      </Box>
-
-      <Button colorScheme="red" mt="4" onClick={handleAddToCart}>
-        Agregar al Carrito
-      </Button>
+    <Box p={5} w="100%" maxW="900px" m="auto" bg="gray.800" borderRadius="lg" boxShadow="lg">
+      <Image 
+        src={item.imagen} 
+        alt={item.nombre} 
+        borderRadius="md"
+        maxH="400px"
+        objectFit="contain"
+        mb={5}
+      />
+      <Stack spacing={3}>
+        <Heading as="h2" size="lg" color="white">
+          {item.nombre}
+        </Heading>
+        <Text color="white">Marca: {item.marca}</Text>
+        <Text color="white">Tipo: {item.tipo}</Text>
+        <Text color="white">Cilindrada (CC): {item.cc}</Text>
+        <Text color="white">Kilómetros: {item.kms} kms</Text>
+        <Text color="white">Precio: USD {item.precio.toLocaleString()}</Text>
+        <Text color="white">Descripción: {item.descripcion}</Text>
+      </Stack>
     </Box>
   );
 };

@@ -1,23 +1,20 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import ItemListContainer from './components/ItemListContainer';
 import ItemDetailContainer from './components/ItemDetailContainer';
-import Cart from './components/Cart'; // Importa el componente del carrito
-import uploadProducts from './uploadProducts'; // Importa la función para subir productos
+import Cart from './components/Cart';
 
 function App() {
-  useEffect(() => {
-    uploadProducts(); // Llama a la función para subir productos al montar la aplicación
-  }, []);
+  const [category, setCategory] = useState('');
 
   return (
     <Router>
-      <Navbar />
+      <Navbar setCategory={setCategory} />
       <Routes>
-        <Route path="/" element={<ItemListContainer />} />
+        <Route path="/" element={<ItemListContainer category={category} />} />
         <Route path="/item/:id" element={<ItemDetailContainer />} />
-        <Route path="/cart" element={<Cart />} /> {/* Ruta para la página del carrito */}
+        <Route path="/cart" element={<Cart />} />
       </Routes>
     </Router>
   );

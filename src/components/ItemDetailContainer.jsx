@@ -1,53 +1,57 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom'; // Para obtener el ID de la URL
+import { useParams } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
-import { Box, Text, Image, Spinner } from '@chakra-ui/react';
+import ItemDetail from './ItemDetail';
+import { Box, Spinner, Heading } from '@chakra-ui/react';
 
 const ItemDetailContainer = () => {
-  const { id } = useParams(); // Obtenemos el ID de la URL
+  const { id } = useParams(); // Captura el ID del producto desde la URL
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchItem = async () => {
       try {
-        const docRef = doc(db, 'products', id); // Se referencia el documento por ID
+        const docRef = doc(db, 'products', id); // Asegúrate de que este ID sea el correcto
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          setItem({ id: docSnap.id, ...docSnap.data() }); // Guardamos el producto en el estado
+          setItem({ id: docSnap.id, ...docSnap.data() });
         } else {
-          console.error('No se encontró el producto.');
+          console.log('No se encontró el producto en Firestore');
         }
       } catch (error) {
-        console.error('Error al obtener el producto:', error);
+        console.error('Error fetching item:', error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchItem();
-  }, [id]); // Ejecuta el efecto cuando cambia el ID
+  }, [id]);
 
   if (loading) {
-    return <Spinner size="xl" />;
+    return (
+      <Box p={5} w="100%" minH="100vh" bg="gray.900" display="flex" justifyContent="center" alignItems="center">
+        <Spinner size="xl" color="white" />
+      </Box>
+    );
   }
 
   if (!item) {
-    return <Text>No se encontró el producto.</Text>;
+    return (
+      <Box p={5} w="100%" minH="100vh" bg="gray.900" display="flex" justifyContent="center" alignItems="center">
+        <Heading as="h2" size="xl" color="white">
+          No se encontró el producto.
+        </Heading>
+      </Box>
+    );
   }
 
   return (
-    <Box>
-      {/* Detalles del producto */}
-      <Image src={item.imagen} alt={item.nombre} boxSize="300px" />
-      <Text fontSize="2xl">{item.nombre}</Text>
-      <Text>Marca: {item.marca}</Text>
-      <Text>Kilómetros: {item.kms}</Text>
-      <Text>Cilindrada (cc): {item.cc}</Text>
-      <Text>Descripción: {item.descripcion}</Text>
-      <Text>Precio: USD {item.precio.toLocaleString()}</Text>
+    <Box p={5} w="100%" minH="100vh" bg="gray.900">
+      <ItemDetail item={item} />
     </Box>
   );
 };

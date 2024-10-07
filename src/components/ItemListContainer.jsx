@@ -1,37 +1,54 @@
 import React, { useEffect, useState } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import ItemList from './ItemList';
+import { Box, Spinner } from '@chakra-ui/react';
 
-const ItemListContainer = () => {
+const ItemListContainer = ({ category }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchItems = async () => {
+      setLoading(true);
       try {
-        const productsCollection = collection(db, 'products');
-        const productSnapshot = await getDocs(productsCollection);
-        const productList = productSnapshot.docs.map((doc) => ({
-          id: doc.id, // Usamos el id generado por Firestore
+        const collectionRef = collection(db, 'products');
+        let q = query(collectionRef);
+
+        if (category) {
+          q = query(collectionRef, where('categoria', '==', category));
+        }
+
+        const querySnapshot = await getDocs(q);
+        const items = querySnapshot.docs.map(doc => ({
+          id: doc.id,
           ...doc.data(),
         }));
-        setProducts(productList);
+
+        setProducts(items);
       } catch (error) {
-        console.error('Error al cargar los productos:', error);
+        console.error('Error fetching items:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProducts();
-  }, []);
+    fetchItems();
+  }, [category]);
 
   if (loading) {
-    return <p>Cargando productos...</p>;
+    return (
+      <Box p={5} display="flex" justifyContent="center" alignItems="center">
+        <Spinner size="xl" />
+      </Box>
+    );
   }
 
-  return <ItemList products={products} />;
+  return (
+    <Box p={5}>
+      <ItemList products={products} />
+    </Box>
+  );
 };
 
 export default ItemListContainer;
